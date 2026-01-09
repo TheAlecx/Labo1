@@ -1,0 +1,233 @@
+Entity-Relationship Diagram (Text Format)
+Base de Données pour les Services Médicaux du Québec
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CORE ENTITIES / ENTITÉS PRINCIPALES:
+
+┌─────────────────────┐
+│     PATIENTS        │
+├─────────────────────┤
+│ PK patient_id       │
+│ UK ramq_number      │
+│    first_name       │
+│    last_name        │
+│    date_of_birth    │
+│    gender           │
+│    address_*        │
+│    phone_number     │
+│    email            │
+│    blood_type       │
+│    allergies        │
+└─────────────────────┘
+         │
+         │ 1
+         │
+         ├──────────────────────────────────────┐
+         │                                      │
+         │                                      │
+         │ N                                    │ N
+┌────────▼──────────────┐              ┌───────▼───────────────┐
+│    APPOINTMENTS       │              │   MEDICAL_RECORDS     │
+├───────────────────────┤              ├───────────────────────┤
+│ PK appointment_id     │              │ PK record_id          │
+│ FK patient_id         │─────────┐    │ FK patient_id         │
+│ FK professional_id    │         │    │ FK professional_id    │
+│ FK facility_id        │         │ 1  │ FK facility_id        │
+│    appointment_date   │         │    │ FK appointment_id     │
+│    appointment_time   │         │    │    visit_date         │
+│    duration_minutes   │         │ 1  │    visit_time         │
+│    status             │         │    │    chief_complaint    │
+│    reason             │         │    │    diagnosis          │
+└───────────────────────┘         │    │    treatment_plan     │
+                                  │    │    follow_up_required │
+                                  │    └───────────────────────┘
+                                  │            │
+                                  │            │ 1
+                                  └────────────┘
+                                               │
+                    ┌──────────────────────────┼──────────────────────────┐
+                    │                          │                          │
+                    │ N                        │ N                        │ N
+         ┌──────────▼────────────┐  ┌──────────▼────────────┐  ┌──────────▼────────────┐
+         │   PRESCRIPTIONS       │  │      LAB_TESTS        │  │                       │
+         ├───────────────────────┤  ├───────────────────────┤  │                       │
+         │ PK prescription_id    │  │ PK test_id            │  │                       │
+         │ FK patient_id         │  │ FK patient_id         │  │                       │
+         │ FK professional_id    │  │ FK ordering_prof_id   │  │                       │
+         │ FK record_id          │  │ FK record_id          │  │                       │
+         │    medication_name    │  │    test_name          │  │                       │
+         │    medication_code    │  │    test_code          │  │                       │
+         │    dosage             │  │    test_category      │  │                       │
+         │    frequency          │  │    order_date         │  │                       │
+         │    prescribed_date    │  │    result_value       │  │                       │
+         │    is_active          │  │    result_status      │  │                       │
+         └───────────────────────┘  └───────────────────────┘  │                       │
+                    │                                           │                       │
+                    │ 1                                         │                       │
+                    │                                           │                       │
+                    │ N                                         │                       │
+         ┌──────────▼────────────┐                             │                       │
+         │ PRESCRIPTION_FILLS    │                             │                       │
+         ├───────────────────────┤                             │                       │
+         │ PK fill_id            │                             │                       │
+         │ FK prescription_id    │                             │                       │
+         │ FK pharmacy_id        │                             │                       │
+         │ FK pharmacist_id      │                             │                       │
+         │    fill_date          │                             │                       │
+         │    quantity_dispensed │                             │                       │
+         └───────────────────────┘                             │                       │
+
+┌─────────────────────────────┐
+│  MEDICAL_PROFESSIONALS      │
+├─────────────────────────────┤
+│ PK professional_id          │
+│ UK license_number           │
+│    professional_type        │
+│    specialty                │
+│    first_name               │
+│    last_name                │
+│    phone_number             │
+│    email                    │
+│    is_active                │
+└─────────────────────────────┘
+         │
+         │ 1
+         │
+         │ N
+┌────────▼──────────────┐
+│   FACILITY_STAFF      │ (Junction Table)
+├───────────────────────┤
+│ PK facility_staff_id  │
+│ FK facility_id        │
+│ FK professional_id    │
+│    start_date         │
+│    end_date           │
+│    is_current         │
+└───────────────────────┘
+         │
+         │ N
+         │
+         │ 1
+┌────────▼──────────────────┐
+│   MEDICAL_FACILITIES      │
+├───────────────────────────┤
+│ PK facility_id            │
+│    facility_name          │
+│    facility_type          │
+│    address_*              │
+│    phone_number           │
+│    email                  │
+│    capacity               │
+│    is_active              │
+└───────────────────────────┘
+
+ADDITIONAL PATIENT-RELATED TABLES:
+
+┌─────────────────────────────┐
+│    MEDICAL_HISTORY          │
+├─────────────────────────────┤
+│ PK history_id               │
+│ FK patient_id               │
+│ FK professional_id          │
+│    condition_type           │
+│    condition_name           │
+│    diagnosis_date           │
+│    resolution_date          │
+│    is_active                │
+│    severity                 │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│  INSURANCE_INFORMATION      │
+├─────────────────────────────┤
+│ PK insurance_id             │
+│ FK patient_id               │
+│    insurance_type           │
+│    policy_number            │
+│    provider_name            │
+│    coverage_start_date      │
+│    coverage_end_date        │
+│    is_active                │
+└─────────────────────────────┘
+
+┌─────────────────────────────┐
+│       VACCINATIONS          │
+├─────────────────────────────┤
+│ PK vaccination_id           │
+│ FK patient_id               │
+│ FK professional_id          │
+│ FK facility_id              │
+│    vaccine_name             │
+│    vaccine_code             │
+│    dose_number              │
+│    administration_date      │
+│    lot_number               │
+│    site                     │
+└─────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+
+CARDINALITY LEGEND / LÉGENDE DE CARDINALITÉ:
+
+1   = One (Exactly one)
+N   = Many (Zero or more)
+PK  = Primary Key
+FK  = Foreign Key
+UK  = Unique Key
+
+RELATIONSHIP SUMMARY / RÉSUMÉ DES RELATIONS:
+
+1. PATIENTS (1) ─────< (N) APPOINTMENTS
+2. PATIENTS (1) ─────< (N) MEDICAL_RECORDS
+3. PATIENTS (1) ─────< (N) PRESCRIPTIONS
+4. PATIENTS (1) ─────< (N) LAB_TESTS
+5. PATIENTS (1) ─────< (N) MEDICAL_HISTORY
+6. PATIENTS (1) ─────< (N) INSURANCE_INFORMATION
+7. PATIENTS (1) ─────< (N) VACCINATIONS
+
+8. MEDICAL_PROFESSIONALS (1) ─────< (N) APPOINTMENTS
+9. MEDICAL_PROFESSIONALS (1) ─────< (N) MEDICAL_RECORDS
+10. MEDICAL_PROFESSIONALS (1) ─────< (N) PRESCRIPTIONS
+11. MEDICAL_PROFESSIONALS (1) ─────< (N) LAB_TESTS
+12. MEDICAL_PROFESSIONALS (1) ─────< (N) FACILITY_STAFF
+
+13. MEDICAL_FACILITIES (1) ─────< (N) APPOINTMENTS
+14. MEDICAL_FACILITIES (1) ─────< (N) MEDICAL_RECORDS
+15. MEDICAL_FACILITIES (1) ─────< (N) FACILITY_STAFF
+16. MEDICAL_FACILITIES (1) ─────< (N) PRESCRIPTION_FILLS
+
+17. APPOINTMENTS (1) ─────< (1) MEDICAL_RECORDS
+18. MEDICAL_RECORDS (1) ─────< (N) PRESCRIPTIONS
+19. MEDICAL_RECORDS (1) ─────< (N) LAB_TESTS
+20. PRESCRIPTIONS (1) ─────< (N) PRESCRIPTION_FILLS
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY DESIGN DECISIONS / DÉCISIONS DE CONCEPTION CLÉS:
+
+1. RAMQ Integration: The 'ramq_number' field uniquely identifies Quebec residents
+   Intégration RAMQ: Le champ 'ramq_number' identifie uniquement les résidents du Québec
+
+2. Flexible Professional Types: Supports doctors, nurses, pharmacists, and specialists
+   Types de professionnels flexibles: Supporte médecins, infirmières, pharmaciens et spécialistes
+
+3. Multi-Facility Support: Professionals can work at multiple facilities
+   Support multi-établissements: Les professionnels peuvent travailler dans plusieurs établissements
+
+4. Complete Medical History: Tracks conditions, surgeries, and family history
+   Historique médical complet: Suit les conditions, chirurgies et antécédents familiaux
+
+5. Prescription Tracking: Full lifecycle from prescription to pharmacy fill
+   Suivi des prescriptions: Cycle complet de la prescription au remplissage en pharmacie
+
+6. Lab Test Management: Orders, collections, and results in one place
+   Gestion des tests de laboratoire: Commandes, prélèvements et résultats en un seul endroit
+
+7. Vaccination Records: Complete immunization tracking
+   Dossiers de vaccination: Suivi complet des immunisations
+
+8. Audit Trail: All tables include created_at and updated_at timestamps
+   Piste d'audit: Toutes les tables incluent des horodatages created_at et updated_at
+
+═══════════════════════════════════════════════════════════════════════════════
