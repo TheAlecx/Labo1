@@ -325,12 +325,16 @@ def main():
     """
     Main function to initialize the database.
     """
-    # Database connection string
-    # Modify this according to your database configuration
-    DATABASE_URL = "postgresql://username:password@localhost:5432/quebec_medical_db"
+    import os
     
-    # Alternatively, use SQLite for testing:
-    # DATABASE_URL = "sqlite:///quebec_medical.db"
+    # Database connection string from environment variable or use SQLite for testing
+    DATABASE_URL = os.getenv(
+        'DATABASE_URL',
+        'sqlite:///quebec_medical.db'  # Default to SQLite for testing
+    )
+    
+    # Example for PostgreSQL: Set DATABASE_URL environment variable to:
+    # "postgresql://username:password@localhost:5432/quebec_medical_db"
     
     print("Quebec Medical Services Database Initialization")
     print("=" * 50)

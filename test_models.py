@@ -43,7 +43,7 @@ def test_models():
     print("\n2. Testing Patient model...")
     try:
         patient = Patient(
-            ramq_number='TEST12345678',
+            ramq_number='TESM90010101',  # Format: 4 letters + 8 digits (RAMQ format)
             first_name='Test',
             last_name='Patient',
             date_of_birth=date(1990, 1, 1),
@@ -224,7 +224,7 @@ def test_models():
         insurance = InsuranceInformation(
             patient_id=patient.patient_id,
             insurance_type='RAMQ',
-            policy_number='TEST12345678',
+            policy_number='TESM90010101',  # Match patient's RAMQ number
             provider_name='RAMQ',
             coverage_start_date=date(2024, 1, 1),
             is_active=True

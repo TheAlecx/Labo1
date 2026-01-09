@@ -79,9 +79,9 @@ class MedicalProfessional(Base):
     medical_records = relationship('MedicalRecord', back_populates='professional', cascade='all, delete-orphan')
     prescriptions = relationship('Prescription', back_populates='professional', cascade='all, delete-orphan')
     lab_tests_ordered = relationship('LabTest', back_populates='ordering_professional', cascade='all, delete-orphan')
-    medical_history_entries = relationship('MedicalHistory', back_populates='professional')
-    prescription_fills = relationship('PrescriptionFill', back_populates='pharmacist')
-    vaccinations = relationship('Vaccination', back_populates='professional')
+    medical_history_entries = relationship('MedicalHistory', back_populates='professional', cascade='all, delete-orphan')
+    prescription_fills = relationship('PrescriptionFill', back_populates='pharmacist', cascade='all, delete-orphan')
+    vaccinations = relationship('Vaccination', back_populates='professional', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f"<MedicalProfessional(id={self.professional_id}, name={self.first_name} {self.last_name}, type={self.professional_type})>"
